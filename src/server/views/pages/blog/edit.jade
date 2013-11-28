@@ -1,0 +1,33 @@
+extends ../../layouts/default
+
+block content
+    form(method='post', action='#{action}')
+        input(type="hidden", name="_csrf", value="#{csrftoken}")
+
+        div Title
+        input(type='text', name='title', value='#{post.title}')
+        div Slug
+        input(type='text', name='slug', value='#{post.slug}')
+        div Format
+        select(name='format')
+            option(value='')
+            each format in formatOptions
+                option(value=format, selected=(post.format==format))=format
+        div Body
+        textarea(name='body', id='editor', class='ckeditor', cols='80', rows='12')
+            !=post.body
+        
+        p This is just a test paragraph.
+        
+        div
+            input(type='submit', value='Save') 
+            a(href='/posts') cancel
+
+block tail-appended
+    script(src='/ckeditor/ckeditor.js')
+    script
+        $(document).ready(function(){
+            CKEDITOR.replace('editor', {
+                extraPlugins: 'divarea,pbckcode,codemirror'
+            });
+        });

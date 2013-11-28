@@ -1,0 +1,152 @@
+<div>
+    <p>Recently, I have been dabbling in the Ruby/Rails world for the first time, and as a newcomer there's lots of new
+        information from many different sources that I thought I would put together for other newbies. After much
+        research and head scratching this is the Rails stack that I've come up with, minus the database, that will be
+        next. I hopeful this setup will be a rock solid solution, and from what I've Google'd around it at least appears
+        to consist of proven frameworks and technologies.</p>
+
+    <p>Here are the technologies I have chosen:</p>
+    <ul>
+        <li>Ubuntu 10.10 (Maverick)</li>
+        <li>RVM 1.1.8</li>
+        <li>nginx 0.8.54</li>
+        <li>Phusion Passenger 3.0.2</li>
+        <li>Ruby 1.9.2 p136</li>
+        <li>Rails 3.0.3</li>
+    </ul>
+    <p>So let me explain a bit about why I chose each item in the list above. I chose Ubuntu as the OS because I want
+        more Unix/Linux experience, seems to be one of the more popular Linux distros out there and its the Linux OS
+        that I have the most familiarity with. Next is Ruby/Rails, I chose the latest versions of each because even
+        though I don't have a specific application in mind to build yet, I might as well spend my time learning the
+        latest and greatest today so if and when I do build my next app in Rails, those versions will be the norm.
+        Moving on, I kind of stumbled onto RVM during my research and glad I did. I love it's ease of use, ability to
+        setup multiple environments without worrying about version conflicts, and it's integration with Capistrano
+        (future blog post). Nginx is light-weight, both in features and memory utilization, fast, I like the
+        configuration syntax and seems to be gaining popularity. Lastly, Phusion Passenger was chosen because it's
+        recommended <a href="http://rubyonrails.org/deploy">here</a> on rubyonrails.org.</p>
+
+    <p>So lets get started and put the pieces together.</p>
+
+    <h3>Setup a new user account.</h3>
+
+    <p>Create a new user account, change the password and then add the new user account to sudoers file. The rails
+        application will run as this user.</p>
+<pre>$ sudo useradd -s /bin/bash -m app-user   		# add user
+$ sudo passwd app-user					# change password
+$ sudo /usr/sbin/visudo					# edit sudoers file
+
+# Add line below just below 'root ALL=(ALL) ALL':
+app-user ALL=(ALL) ALL
+</pre>
+    <p>From here on out we'll be executing the installation as this user.</p>
+    <pre>$ su app-user</pre>
+    <h3>Install RVM</h3>
+
+    <p>Install the dependencies needed for RVM and then install.</p>
+<pre>$ sudo apt-get install git curl build-essential vim libcurl4-openssl-dev
+$ bash &lt; &lt;( curl http://rvm.beginrescueend.com/releases/rvm-install-head )</pre>
+    <p>Brilliant! Can't get any easier than this.</p>
+
+    <p><br>
+        Update ~/.bashrc file (remember this is the app-user's .bashrc file).</p>
+<pre>$ vim ~/.bashrc
+
+# This snippet should placed at the end of the .bashrc file.
+[[ -s "$HOME/.rvm/scripts/rvm" ]] &amp;&amp; . "$HOME/.rvm/scripts/rvm"  # This loads RVM into a shell session.</pre>
+    <p>Exit as app-user and then su app-user again to load rvm into the shell session.</p>
+
+    <h3>Install Ruby prerequisites</h3>
+
+    <p>Double-check what the Ruby dependencies are using:</p>
+    <pre>$ rvm notes</pre>
+    <p>Install the dependencies</p>
+<pre>$ sudo apt-get install build-essential bison openssl libreadline6 libreadline6-dev \
+		curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev \
+		sqlite3 libxml2-dev libxslt-dev autoconf</pre>
+    <h3>Install Ruby</h3>
+
+    <p>Install Ruby using rvm.</p>
+<pre>$ rvm package install zlib
+$ rvm package install openssl
+$ rvm install 1.9.2 --with-zlib-dir=$rvm_path/usr --with-openssl-dir=$rvm_path/usr</pre>
+    <h3>Create GemSet</h3>
+<pre>$ rvm --create use 1.9.2@myapplication
+$ rvm --default use 1.9.2@myapplication
+$ ruby -v  # test it</pre>
+    <h3>Install Phusion Passenger</h3>
+    <pre>$ gem install passenger</pre>
+    <h3>Install nginx using the passenger installer</h3>
+
+    <p>Download and then extract nginx source, remember this location. The passenger installer can download it for you
+        as part of option 1 during the install, but I chose option 2 so that I can supply extra arguments to the nginx
+        installer.</p>
+<pre>$ wget http://nginx.org/download/nginx-0.8.54.tar.gz
+$ tar xvf nginx-0.8.54.tar.gz
+$ rvmsudo passenger-install-nginx-module  # rvmsudo is required in order to install nginx to /opt/nginx</pre>
+    <p>Create an Upstart job to start nginx at boot time. Create a new file /etc/init/nginx.conf and then add the
+        following:</p>
+    <pre>$ sudo vim /etc/init/nginx.conf</pre>
+    <p>The complete contents of the nginx.conf file are:</p>
+<pre>	description "Nginx HTTP Server"
+
+	start on filesystem
+	stop on runlevel [!2345]
+
+	respawn
+
+	exec /opt/nginx/sbin/nginx -g "daemon off;"</pre>
+    <p>Next, we'll want to restart to verify our upstart script works.</p>
+    <pre>$ sudo shutdown -r now</pre>
+    <p>Verify nginx is up and running</p>
+    <pre>$ sudo initctl list | grep nginx</pre>
+    <p>You should see:</p>
+    <pre>nginx start/running, process 678</pre>
+    <p>…Or use a browser and visit http://localhost</p>
+
+    <h3>Install Rails 3</h3>
+
+    <p>su back in with app-user if you're not already.</p>
+    <pre>$ gem install rails --version 3.0.3</pre>
+    <h3>Create a sample rails application to verify our setup</h3>
+<pre>$ sudo mkdir /rails_apps
+$ sudo chown app-user:app-user /rails_apps
+$ cd /rails_apps
+
+$ rails new myapplication
+$ cd /rails_apps/myapplication
+$ bundle install
+$ rails generate scaffold Post name:string title:string content:text
+$ RAILS_ENV=production rake db:migrate</pre>
+    <h3>Configure your rails app to work with nginx/passenger</h3>
+
+    <p>Open nginx.conf to configure nginx</p>
+    <pre>$ sudo vim /opt/nginx/conf/nginx.conf</pre>
+    <p>Change the second line for the user to ‘app-user'</p>
+
+    <p>You will then need to add a server block looking similar to this:</p>
+<pre>	server {
+	listen 80;
+	server_name localhost;
+	root /rails_apps/myapplication/public;   # &lt;--- be sure to point to 'public'!
+	passenger_enabled on;
+	}</pre>
+    <p>Restart nginx once again</p>
+    <pre>$ sudo service nginx restart</pre>
+    <h3>Use a browser to test app</h3>
+
+    <p>You will most likely see an error in /www/my-application/log/production.log that says something like “attempt to
+        write a readonly database”. You will need to figure out your permissions with the
+        /my-application/db/production.sqlite3 directory and file. However, if you're rails app is configured to use a
+        different rdms other than SQLite like MySQL of PostgreSQL, this will probably won't be an issue.</p>
+
+    <h3>References:</h3>
+    <ul>
+        <li><a href="http://www.modrails.com/documentation/Users%20guide%20Nginx.html">Phusion Passenger users guide,
+            Nginx version</a></li>
+        <li><a href="http://rvm.beginrescueend.com/">RVM</a></li>
+        <li><a href="http://www.cowboycoded.com/2010/07/07/setting-up-rails-3-on-rackspace-cloud-servers/">Setting up
+            Rails 3 on Rackspace Cloud Servers</a></li>
+        <li><a href="http://serverfault.com/questions/143461/how-can-i-start-nginx-via-upstart">How can I start nginx
+            via upstart ?</a></li>
+    </ul>
+</div>

@@ -1,0 +1,36 @@
+{
+    "posts": [
+        {
+            "url":"/2011/04/29/how-to-setup-oracle-database-gateway-for-sql-server/",
+            "file":"how-to-setup-oracle-database-gateway-for-sql-server.html"
+        },
+        {
+            "url":"/2011/01/07/rvm-nginx-passenger-rails-3/",
+            "file":"rvm-nginx-passenger-rails-3.html"
+        },
+        {
+            "url":"/2010/10/07/commons-daemon-procrun-as-a-java-service-wrapper-for-activemq/",
+            "file":"commons-daemon-procrun-as-a-java-service-wrapper-for-activemq.html"
+        },
+        {
+            "url":"/2010/10/04/up-and-running-with-stk-scheme-and-emacs/",
+            "file":"up-and-running-with-stk-scheme-and-emacs.html"
+        },
+        {
+            "url": "/2010/05/11/mockito-spring-autowired-annotations/",
+            "file":"mockito-spring-autowired-annotations.html"
+        },
+        {
+            "url": "/2010/04/30/atomikos-activemq-hibernate/",
+            "file":"atomikos-activemq-hibernate.html"
+        },
+        {
+            "url": "/2010/03/05/jaxb-xmlrootelement-and-xml-case-sensitivity/",
+            "file":"jaxb-xmlrootelement-and-xml-case-sensitivity.html"
+        },
+        {
+            "url": "/2009/07/29/maven-jaxb-plugin/",
+            "file":"maven-jaxb-plugin.html"
+        }
+    ]
+}

@@ -1,0 +1,216 @@
+I recently tasked myself to put together a sample project using &lt;a href="http://atomikos.com/"&gt;Atomikos&lt;/a&gt; &lt;a href="http://www.atomikos.com/Main/TransactionsEssentials"&gt;TransactionsEssentials&lt;/a&gt;.  This sample project consists of Spring 3, Hibernate 3.4, Apache ActiveMQ 5.3, and of course Atomikos TransactionsEssentials.
+
+TransactionEssentials is an open source &lt;a href="http://en.wikipedia.org/wiki/Two-phase_commit"&gt;XA&lt;/a&gt; transaction manager built on top of their transaction kernel called '&lt;em&gt;icatch&lt;/em&gt;'.  Essentials has basic support for JDBC/XA, JMS/XA, &amp; JTA/XA.  Once you register with Atomikos you will receive a link to download TransactionEsentials and a Maven repository url via email, we'll proceed with the later.
+
+Once you have the Atomikos maven repository url, either add it to the repository section of your pom.xml or add it to your &lt;a href="http://nexus.sonatype.org/"&gt;internal maven repository&lt;/a&gt;.
+
+
+<pre>
+
+&lt;properties&gt;
+&lt;atomikos.version&gt;3.5.11&lt;/atomikos.version&gt;
+&lt;activemq.version&gt;5.3.1&lt;/activemq.version&gt;
+&lt;springframework.version&gt;3.0.2.RELEASE&lt;/springframework.version&gt;
+&lt;/properties&gt;
+
+&lt;!--
+Atomikos dependencies used for XA
+--&gt;
+&lt;dependency&gt;
+&lt;groupId&gt;com.atomikos&lt;/groupId&gt;
+&lt;artifactId&gt;transactions-jms&lt;/artifactId&gt;
+&lt;version&gt;${atomikos.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+&lt;groupId&gt;com.atomikos&lt;/groupId&gt;
+&lt;artifactId&gt;transactions-hibernate3&lt;/artifactId&gt;
+&lt;version&gt;${atomikos.version}&lt;/version&gt;
+&lt;exclusions&gt;
+&lt;exclusion&gt;
+&lt;artifactId&gt;hibernate&lt;/artifactId&gt;
+&lt;groupId&gt;org.hibernate&lt;/groupId&gt;
+&lt;/exclusion&gt;
+&lt;/exclusions&gt;
+&lt;/dependency&gt;
+
+&lt;!--
+Microsoft JDBC driver
+--&gt;
+&lt;dependency&gt;
+&lt;groupId&gt;com.microsoft&lt;/groupId&gt;
+&lt;artifactId&gt;sqljdbc&lt;/artifactId&gt;
+&lt;version&gt;2.0.0&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;!--
+Spring framework dependencies
+--&gt;
+&lt;dependency&gt;
+&lt;groupId&gt;org.springframework&lt;/groupId&gt;
+&lt;artifactId&gt;spring-orm&lt;/artifactId&gt;
+&lt;version&gt;${springframework.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+&lt;groupId&gt;org.springframework&lt;/groupId&gt;
+&lt;artifactId&gt;spring-jms&lt;/artifactId&gt;
+&lt;version&gt;${springframework.version}&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;!--
+Hibernate dependencies
+--&gt;
+&lt;dependency&gt;
+&lt;groupId&gt;org.hibernate&lt;/groupId&gt;
+&lt;artifactId&gt;hibernate-entitymanager&lt;/artifactId&gt;
+&lt;version&gt;3.4.0.GA&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+&lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+&lt;artifactId&gt;slf4j-log4j12&lt;/artifactId&gt;
+&lt;version&gt;1.4.2&lt;/version&gt;
+&lt;/dependency&gt;
+
+&lt;!--
+ActiveMQ dependencies
+--&gt;
+&lt;dependency&gt;
+&lt;groupId&gt;org.apache.activemq&lt;/groupId&gt;
+&lt;artifactId&gt;activemq-core&lt;/artifactId&gt;
+&lt;version&gt;${activemq.version}&lt;/version&gt;
+&lt;/dependency&gt;
+
+</pre>
+
+
+Here's the spring configuration:
+
+<pre>
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:tx="http://www.springframework.org/schema/tx"
+xmlns:context="http://www.springframework.org/schema/context"
+xmlns:p="http://www.springframework.org/schema/p"
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd"&gt;
+
+&lt;bean id="userTransactionService" class="com.atomikos.icatch.config.UserTransactionServiceImp" init-method="init" destroy-method="shutdownForce"&gt;
+&lt;constructor-arg&gt;
+&lt;props&gt;
+&lt;prop key="com.atomikos.icatch.service"&gt;com.atomikos.icatch.standalone.UserTransactionServiceFactory&lt;/prop&gt;
+&lt;/props&gt;
+&lt;/constructor-arg&gt;
+&lt;/bean&gt;
+
+&lt;bean id="AtomikosTransactionManager" class="com.atomikos.icatch.jta.UserTransactionManager" init-method="init" destroy-method="close" depends-on="userTransactionService"&gt;
+&lt;!--  When close is called, should we force transactions to terminate or not?  --&gt;
+&lt;property name="forceShutdown" value="false" /&gt;
+&lt;/bean&gt;
+
+&lt;bean id="AtomikosUserTransaction" class="com.atomikos.icatch.jta.UserTransactionImp" depends-on="userTransactionService"&gt;
+&lt;property name="transactionTimeout" value="300" /&gt;
+&lt;/bean&gt;
+
+&lt;!--
+Configure the Spring framework to use JTA transactions from Atomikos
+--&gt;
+&lt;bean id="jtaTransactionManager" class="org.springframework.transaction.jta.JtaTransactionManager" depends-on="userTransactionService"&gt;
+&lt;property name="transactionManager" ref="AtomikosTransactionManager" /&gt;
+&lt;property name="userTransaction" ref="AtomikosUserTransaction" /&gt;
+&lt;/bean&gt;
+
+&lt;bean id="datasource" class="com.atomikos.jdbc.AtomikosDataSourceBean" init-method="init" destroy-method="close"&gt;
+&lt;property name="uniqueResourceName" value="XADBMS" /&gt;
+&lt;property name="xaDataSourceClassName" value="com.microsoft.sqlserver.jdbc.SQLServerXADataSource" /&gt;
+&lt;property name="xaProperties"&gt;
+&lt;!--
+set the driver-specific XADataSource properties (check your driver docs for more info)
+--&gt;
+&lt;props&gt;
+&lt;prop key="user"&gt;dbuser&lt;/prop&gt;
+&lt;prop key="password"&gt;dbpass&lt;/prop&gt;
+&lt;prop key="URL"&gt;jdbc:sqlserver://dev-server;databaseName=SomeDB;applicationName=XA-Sample&lt;/prop&gt;
+&lt;/props&gt;
+&lt;/property&gt;
+&lt;property name="minPoolSize" value="1" /&gt;
+&lt;property name="maxPoolSize" value="50" /&gt;
+&lt;/bean&gt;
+
+&lt;bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean"&gt;
+&lt;property name="configLocation" value="classpath:hibernate.cfg.xml" /&gt;
+&lt;property name="configurationClass" value="org.hibernate.cfg.AnnotationConfiguration" /&gt;
+&lt;property name="dataSource" ref="datasource" /&gt;
+&lt;property name="hibernateProperties"&gt;
+&lt;props&gt;
+&lt;prop key="hibernate.transaction.factory_class"&gt;com.atomikos.icatch.jta.hibernate3.AtomikosJTATransactionFactory&lt;/prop&gt;
+&lt;prop key="hibernate.transaction.manager_lookup_class"&gt;com.atomikos.icatch.jta.hibernate3.TransactionManagerLookup&lt;/prop&gt;
+&lt;/props&gt;
+&lt;/property&gt;
+&lt;/bean&gt;
+
+&lt;bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate"&gt;
+&lt;property name="sessionFactory" ref="sessionFactory" /&gt;
+&lt;/bean&gt;
+
+&lt;!-- ActiveMQ Setup --&gt;
+
+&lt;bean id="jmsXaConnectionFactory" class="org.apache.activemq.ActiveMQXAConnectionFactory"&gt;
+&lt;property name="brokerURL" value="tcp://dev-server:61616" /&gt;
+&lt;property name="userName" value="user"/&gt;
+&lt;property name="password" value="password"/&gt;
+&lt;/bean&gt;
+
+&lt;!-- Configure the JMS connector; call init to register for recovery! --&gt;
+
+&lt;bean id="amqConnectionFactory" class="com.atomikos.jms.AtomikosConnectionFactoryBean" init-method="init"&gt;
+&lt;property name="uniqueResourceName" value="XAactiveMQ" /&gt;
+&lt;property name="xaConnectionFactory" ref="jmsXaConnectionFactory" /&gt;
+&lt;property name="poolSize" value="5"/&gt;
+&lt;/bean&gt;
+
+&lt;bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate"&gt;
+&lt;property name="connectionFactory" ref="amqConnectionFactory"/&gt;
+&lt;property name="receiveTimeout" value="2000" /&gt;
+&lt;property name="sessionTransacted" value="true" /&gt;
+&lt;/bean&gt;
+
+&lt;tx:annotation-driven transaction-manager="jtaTransactionManager" /&gt;
+
+&lt;context:component-scan base-package="com.company.application"/&gt;
+
+&lt;context:annotation-config/&gt;
+
+</pre>
+
+And that's about it for the setup of the infrastructure components.  You should be able to @Autowire a &lt;a href="http://static.springsource.org/spring/docs/current/javadoc-api/index.html?org/springframework/jms/core/JmsTemplate.html"&gt;JmsTemplate&lt;/a&gt;, &lt;a href="http://static.springsource.org/spring/docs/current/javadoc-api/index.html?org/springframework/transaction/PlatformTransactionManager.html"&gt;PlatformTransactionManager&lt;/a&gt; (or use @Transactional) and &lt;a href="http://docs.jboss.org/hibernate/stable/core/api/index.html?org/hibernate/SessionFactory.html"&gt;SessionFactory &lt;/a&gt;in your application classes.
+
+<pre>
+    
+@Repository
+public class SomeEntityDaoHibernateImpl implements SomeEntityDao {
+
+@Autowired
+private SessionFactory sessionFactory;
+
+@Autowired
+private JmsTemplate jmsTemplate;
+
+@Transactional(readOnly=true)
+public SomeEntity getSomeEntity(Integer entityId) {
+return (SomeEntity ) sessionFactory.getCurrentSession().get(SomeEntity .class, entityId);
+}
+
+@Transactional(propagation=Propagation.REQUIRED)
+public void updateSomeEntity (SomeEntity someEntity ) {
+sessionFactory.getCurrentSession().update(someEntity );
+jmsTemplate.convertAndSend("MyCompany.SomeCompany.UPDATE", "Entity updated ["+new Date()+"]: " + someEntity.toString() );
+}
+
+</pre>
+
+
+
+
+

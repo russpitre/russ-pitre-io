@@ -1,0 +1,41 @@
+!!!
+//if lt IE 7
+    html.no-js.lt-ie9.lt-ie8.lt-ie7
+//if IE 7
+    html.no-js.lt-ie9.lt-ie8
+//if IE 8
+    html.no-js.lt-ie9
+//if gt IE 8
+    html.no-js
+html
+    include ../includes/head
+    style
+        #line {
+            fill:orange;
+            stroke:green;
+            stroke-width:10px;
+            }
+
+
+
+body
+    svg(xmlns="http://www.w3.org/2000/svg", version="1.1", viewBox="0 0 100% 100%", style="width:100%; height:100%; position:absolute; top:0; left:0; z-index:-1;background-color: #333;")
+        defs
+            linearGradient(id="gradient", x1="0%", x2="0%", y1="0%", y2="100%")
+                stop(stop-color="#333", offset="0%")
+                stop(stop-color="#111", offset="100%")
+
+        //circle(cx="0", cy="60", r="30", style="fill:#444")
+        //    animate(attributeName="r", attributeType="XML", begin="0s", dur="15s", repeatCount="indefinite", from="0", to="200%")
+
+        path(id="line", d="m0,20 l 2000,0")
+            animate(attributeName="d",attributeType="XML", dur="10s", begin="0s", from="m0,20 l 0,0", to="m0,20 l 2000,0")
+
+        circle(cx="0", cy="20", r="8", style="fill:#444")
+            animate(attributeName="cx", attributeType="XML", begin="0s", dur="60s", repeatCount="indefinite", from="0", to="100%")
+
+
+    div hello world
+
+
+

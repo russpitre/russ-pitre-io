@@ -1,0 +1,28 @@
+!!!
+//if lt IE 7
+    html.no-js.lt-ie9.lt-ie8.lt-ie7
+//if IE 7
+    html.no-js.lt-ie9.lt-ie8
+//if IE 8
+    html.no-js.lt-ie9
+//if gt IE 8
+    html.no-js
+html
+    include _head
+
+body.claro
+
+    div#wrap
+        include _navbar
+
+        div.container.fullscreen
+            block content
+            div#push
+
+    div#footer
+        div.container
+            include _footer
+
+    include _tail
+
+    block tail-appended

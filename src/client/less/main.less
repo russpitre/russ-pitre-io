@@ -1,0 +1,118 @@
+@import url(http://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700,300italic,400italic,500italic,700italic|Droid+Serif:400,700,400italic,700italic);
+
+//
+// Core variables and mixins
+//
+@import "variables.less";
+@import "mixins.less";
+@import "page-index.less";
+
+
+//
+// Reset
+// ------------------------------
+
+*{box-sizing: border-box;}
+
+
+
+a.noline {
+  text-decoration: none;
+}
+
+span.emphasize {
+  color: @solarize-color-green;
+}
+
+h1,h3,h5 {
+  font-family: @font-serif;
+}
+
+h2,h4,h6 {
+  font-family: @font-sans-serif;
+}
+
+//
+// Layout - default
+// ------------------------------
+html {
+  height: 100%;
+}
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: @font-sans-serif;
+  font-size: @font-body-copy;
+  line-height: @font-body-copy * @line-height-factor;
+  color: @solarize-color-base03;
+
+  background: url(/img/bg/deck.jpg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.screen-content {
+/*  position: relative;
+  top: 0;
+  left: 0;
+  */
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
+kbd {
+  padding: 2px 6px 1px 6px;
+  line-height: 1;
+  display: inline-block;
+  border-radius: .3em;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2), 0 0 0 1px white inset;
+  background-color: #fafafa;
+  border-color: #ccc #ccc white;
+  border-style: solid solid none;
+  border-width: 1px 1px medium;
+  color: #444;
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+a:visited, a:link, a:active {
+  color: @solarize-color-blue;
+}
+a:hover {
+  color: @solarize-color-magenta;
+}
+
+//
+// IntelliJ Keymap
+// ------------------------------
+
+.clear:before, .clear:after {
+  content: "\0020";
+  display: block;
+  height: 0;
+  overflow: hidden;
+}
+
+.clear:after {
+  clear: both;
+}
+
+div.ui.floated.right.filterButtons {
+  float: right;
+
+  .button {
+    margin: 2px;
+  }
+}
+
+div.segment.hotkey {
+  width: 200px;
+  float: left;
+  margin: 0 15px 15px 15px;
+}
+
+

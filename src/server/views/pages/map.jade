@@ -1,0 +1,21 @@
+extends ../layouts/fullscreen
+
+block styles
+    link(rel="stylesheet",href="http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/js/esri/css/esri.css")
+    style
+        html, body, #themap {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+        #themap {
+            background-color: #eee;
+        }
+
+block content
+    div#themap
+
+block tail-appended
+    script(src='http://serverapi.arcgisonline.com/jsapi/arcgis/3.4/')
+    script(src='javascripts/map.js')

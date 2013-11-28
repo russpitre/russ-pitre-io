@@ -1,0 +1,87 @@
+[
+    {
+        "keymap": "Ctrl+Shift+A",
+        "type": "Navigation",
+        "description": "Action Searcher"
+    }, 
+    {
+        "keymap": "Alt+Insert",
+        "type": "File",
+        "description": "New File Dialog"
+    },
+    {
+        "keymap": "Ctrl+H",
+        "type": "Navigation",
+        "description": "Type Hiearchy"
+    }, 
+    {
+        "keymap": "Alt+F7",
+        "type": "Find",
+        "description": "Find Usages"
+    },
+    {
+        "keymap": "Ctrl+Shift+F",
+        "type": "Find",
+        "description": "Find in Path..."
+    },
+    {
+        "keymap": "Alt+INSERT",
+        "type": "Code",
+        "description": "Generate"
+    },
+    {
+        "keymap": "Ctrl+Alt+L",
+        "type": "Code",
+        "description": "Reformat"
+    },
+    {
+        "keymap": "Ctrl+J",
+        "type": "Code",
+        "description": "Insert Live Template"
+    },
+    {
+        "keymap": "Ctrl+O",
+        "type": "Code",
+        "description": "Override Method"
+    },
+    {
+        "keymap": "Ctrl+9",
+        "type": "Code",
+        "description": "Make"
+    },
+    {
+        "keymap": "F6",
+        "type": "Code",
+        "description": "Move"
+    },
+    {
+        "keymap": "Shift+F6",
+        "type": "Refactor",
+        "description": "Rename"
+    },
+    {
+        "keymap": "Ctrl+Alt+T",
+        "type": "Refactor",
+        "description": "Surround with..."
+    },
+    {
+        "keymap": "Ctrl+Alt+M",
+        "type": "Refactor",
+        "description": "Extract to Method"
+    },
+    {
+        "keymap": "Ctrl+E",
+        "type": "Navigation",
+        "description": "Recent Files"
+    },
+    {
+        "keymap": "F11",
+        "type": "Navigation",
+        "description": "Add Bookmark"
+    },
+    {
+        "keymap": "Shift+F11",
+        "type": "Navigation",
+        "description": "Bookmarks"
+    }
+]

@@ -1,0 +1,47 @@
+extends ../layouts/default
+include ../mixins/helper
+
+block content
+    p &nbsp;
+    div.ui.vertically.divided.grid
+        div.one.column.row
+            div.column
+                h1.ui.header.red.clear
+                    img.ui.left.floated.rounded.image(src='http://www.file-extensions.org/imgs/app-icon/128/9420/intellij-idea-for-linux-icon.png', height='60', width='60')
+                    div.content
+                        | IntelliJ IDEA Keymap
+                        div.sub.header keymap learning tool
+    
+    div(ng-app='keymapApp')
+
+        div(ng-controller='KeymapListController')
+
+            div.ui.vertically.divided.grid
+                
+                div.one.column.row
+                    
+                    div.column
+                        
+                        div.ui.floated.right.tiny.buttons.filterButtons
+                            div.ui.button.teal(ng-click='doFilter(\'Find\')') Find  (F)
+                            div.ui.button.red(ng-click='doFilter(\'Navigation\')') Navigation (N)
+                            div.ui.button.green(ng-click='doFilter(\'File\')') File (I)
+                            div.ui.button.blue(ng-click='doFilter(\'Code\')') Code  (C)
+                            div.ui.button.purple(ng-click='doFilter(\'Refactor\')') Refactor (R)
+                            div.ui.button(ng-click='doFilter(\'\')') Reset (Esc)
+
+                div.one.column.row
+                    
+                    div.column
+
+                        div.ui.raised.segment.hotkey(ng-repeat='key in keymaps | filter:filter | orderBy:sortOn', ng-class='css(key)')
+                            div.content.center
+                                h3.description {{key.description}}
+                                kbd.name {{key.keymap}}
+
+
+
+
+block tail-appended
+    script(src='/vendor/angular/angular.js')
+    script(src='/javascripts/intellij.js')       

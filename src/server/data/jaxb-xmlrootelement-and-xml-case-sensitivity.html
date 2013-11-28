@@ -1,0 +1,545 @@
+<div>
+    <p>Today I started to incorporate our organization's canonical data model (a SOA design pattern) defined in <a
+            href="http://en.wikipedia.org/wiki/XML_Schema_(W3C)">XSD</a> into a Java web app with the use of <a
+            href="http://en.wikipedia.org/wiki/Java_Architecture_for_XML_Binding">JAXB</a> annotations. JAXB is a
+        framework for binding Java objects to XML elements and vice versa through the use of JAXB <a
+                href="https://jaxb.dev.java.net/nonav/2.2/docs/api/javax/xml/bind/annotation/package-summary.html#package_description">annotations</a>.
+        The domain layer within our web application closely matches the canonical data model already so refactoring the
+        web application was not necessary. The purpose of this exercise is to prepare for the development of soap-based
+        web services.</p>
+
+    <p>I ran into a 2 hour wall while developing a unit test for the domain object. I want the unit test to ensure that
+        my JAXB annotations are setup correctly and that they should be honoring the xsd document.</p>
+
+    <p>Here's a look at a xsd snippet.</p>
+
+    <div>
+        <div id="highlighter_513632" class="syntaxhighlighter  xml">
+            <div class="toolbar"><span><a href="#" class="toolbar_item command_help help">?</a></span></div>
+            <table border="0" cellpadding="0" cellspacing="0">
+                <tbody>
+                <tr>
+                    <td class="gutter">
+                        <div class="line number1 index0 alt2">01</div>
+                        <div class="line number2 index1 alt1">02</div>
+                        <div class="line number3 index2 alt2">03</div>
+                        <div class="line number4 index3 alt1">04</div>
+                        <div class="line number5 index4 alt2">05</div>
+                        <div class="line number6 index5 alt1">06</div>
+                        <div class="line number7 index6 alt2">07</div>
+                        <div class="line number8 index7 alt1">08</div>
+                        <div class="line number9 index8 alt2">09</div>
+                        <div class="line number10 index9 alt1">10</div>
+                        <div class="line number11 index10 alt2">11</div>
+                        <div class="line number12 index11 alt1">12</div>
+                        <div class="line number13 index12 alt2">13</div>
+                        <div class="line number14 index13 alt1">14</div>
+                        <div class="line number15 index14 alt2">15</div>
+                        <div class="line number16 index15 alt1">16</div>
+                        <div class="line number17 index16 alt2">17</div>
+                        <div class="line number18 index17 alt1">18</div>
+                        <div class="line number19 index18 alt2">19</div>
+                        <div class="line number20 index19 alt1">20</div>
+                        <div class="line number21 index20 alt2">21</div>
+                        <div class="line number22 index21 alt1">22</div>
+                        <div class="line number23 index22 alt2">23</div>
+                        <div class="line number24 index23 alt1">24</div>
+                    </td>
+                    <td class="code">
+                        <div class="container">
+                            <div class="line number1 index0 alt2"><code class="xml plain">&lt;?</code><code
+                                    class="xml keyword">xml</code> <code class="xml color1">version</code><code
+                                    class="xml plain">=</code><code class="xml string">"1.0"</code> <code
+                                    class="xml color1">encoding</code><code class="xml plain">=</code><code
+                                    class="xml string">"UTF-8"</code><code class="xml plain">?&gt;</code></div>
+                            <div class="line number2 index1 alt1"><code class="xml plain">&lt;</code><code
+                                    class="xml keyword">xsd:schema</code> <code class="xml color1">xmlns:xsd</code><code
+                                    class="xml plain">=</code><code class="xml string">"<a
+                                    href="http://www.w3.org/2001/XMLSchema">http://www.w3.org/2001/XMLSchema</a>"</code>
+                            </div>
+                            <div class="line number3 index2 alt2"><code class="xml spaces">
+                                    </code><code class="xml color1">targetNamespace</code><code
+                                    class="xml plain">=</code><code class="xml string">"<a
+                                    href="http://acme.com/schema/type/project/v1">http://acme.com/schema/type/project/v1</a>"</code>
+                            </div>
+                            <div class="line number4 index3 alt1"><code class="xml spaces">
+                                    </code><code class="xml color1">xmlns:project</code><code
+                                    class="xml plain">=</code><code class="xml string">"<a
+                                    href="http://acme.com/schema/type/project/v1">http://acme.com/schema/type/project/v1</a>"</code>
+                            </div>
+                            <div class="line number5 index4 alt2"><code class="xml spaces">
+                                    </code><code class="xml color1">xmlns:company</code><code
+                                    class="xml plain">=</code><code class="xml string">"<a
+                                    href="http://acme.com/schema/type/company/v1">http://acme.com/schema/type/company/v1</a>"</code>
+                            </div>
+                            <div class="line number6 index5 alt1"><code class="xml spaces">
+                                    </code><code class="xml color1">elementFormDefault</code><code
+                                    class="xml plain">=</code><code class="xml string">"qualified"</code><code
+                                    class="xml plain">&gt;</code></div>
+                            <div class="line number7 index6 alt2"> </div>
+                            <div class="line number8 index7 alt1"><code class="xml spaces">
+                                    </code><code class="xml plain">&lt;</code><code
+                                    class="xml keyword">xsd:import</code> <code class="xml color1">namespace</code><code
+                                    class="xml plain">=</code><code class="xml string">"<a
+                                    href="http://acme.com/schema/type/company/v1">http://acme.com/schema/type/company/v1</a>"</code>
+                                <code class="xml color1">schemaLocation</code><code class="xml plain">=</code><code
+                                        class="xml string">"../company/company.xsd"</code><code
+                                        class="xml plain">/&gt;</code></div>
+                            <div class="line number9 index8 alt2"> </div>
+                            <div class="line number10 index9 alt1"><code class="xml spaces">
+                                    </code><code class="xml plain">&lt;</code><code
+                                    class="xml keyword">xsd:element</code> <code class="xml color1">name</code><code
+                                    class="xml plain">=</code><code class="xml string">"Project"</code> <code
+                                    class="xml color1">type</code><code class="xml plain">=</code><code
+                                    class="xml string">"project:ProjectType"</code><code class="xml plain">/&gt;</code>
+                            </div>
+                            <div class="line number11 index10 alt2"> </div>
+                            <div class="line number12 index11 alt1"><code class="xml spaces">
+                                    </code><code class="xml plain">&lt;</code><code
+                                    class="xml keyword">xsd:complexType</code> <code class="xml color1">name</code><code
+                                    class="xml plain">=</code><code class="xml string">"ProjectType"</code><code
+                                    class="xml plain">&gt;</code></div>
+                            <div class="line number13 index12 alt2"><code class="xml spaces">        </code><code
+                                    class="xml plain">&lt;</code><code class="xml keyword">xsd:annotation</code><code
+                                    class="xml plain">&gt;</code></div>
+                            <div class="line number14 index13 alt1"><code class="xml spaces">            </code><code
+                                    class="xml plain">&lt;</code><code class="xml keyword">xsd:documentation</code><code
+                                    class="xml plain">&gt;Represents a project that acme manages.  This data is
+                                stored in the Prolog database.&lt;/</code><code
+                                    class="xml keyword">xsd:documentation</code><code class="xml plain">&gt;</code>
+                            </div>
+                            <div class="line number15 index14 alt2"><code class="xml spaces">        </code><code
+                                    class="xml plain">&lt;/</code><code class="xml keyword">xsd:annotation</code><code
+                                    class="xml plain">&gt;</code></div>
+                            <div class="line number16 index15 alt1"><code class="xml spaces">        </code><code
+                                    class="xml plain">&lt;</code><code class="xml keyword">xsd:sequence</code><code
+                                    class="xml plain">&gt;</code></div>
+                            <div class="line number17 index16 alt2"><code class="xml spaces">            </code><code
+                                    class="xml plain">&lt;</code><code class="xml keyword">xsd:element</code> <code
+                                    class="xml color1">name</code><code class="xml plain">=</code><code
+                                    class="xml string">"name"</code> <code class="xml color1">type</code><code
+                                    class="xml plain">=</code><code class="xml string">"xsd:string"</code><code
+                                    class="xml plain">/&gt;</code></div>
+                            <div class="line number18 index17 alt1"><code class="xml spaces">            </code><code
+                                    class="xml plain">&lt;</code><code class="xml keyword">xsd:element</code> <code
+                                    class="xml color1">name</code><code class="xml plain">=</code><code
+                                    class="xml string">"number"</code> <code class="xml color1">type</code><code
+                                    class="xml plain">=</code><code class="xml string">"xsd:string"</code><code
+                                    class="xml plain">/&gt;</code></div>
+                            <div class="line number19 index18 alt2"><code class="xml spaces">            </code><code
+                                    class="xml plain">&lt;</code><code class="xml keyword">xsd:element</code> <code
+                                    class="xml color1">name</code><code class="xml plain">=</code><code
+                                    class="xml string">"status"</code> <code class="xml color1">type</code><code
+                                    class="xml plain">=</code><code class="xml string">"xsd:string"</code><code
+                                    class="xml plain">/&gt;</code></div>
+                            <div class="line number20 index19 alt1"><code class="xml spaces">        </code><code
+                                    class="xml plain">&lt;/</code><code class="xml keyword">xsd:sequence</code><code
+                                    class="xml plain">&gt;</code></div>
+                            <div class="line number21 index20 alt2"><code class="xml spaces">        </code><code
+                                    class="xml plain">&lt;</code><code class="xml keyword">xsd:attribute</code> <code
+                                    class="xml color1">name</code><code class="xml plain">=</code><code
+                                    class="xml string">"projectId"</code> <code class="xml color1">type</code><code
+                                    class="xml plain">=</code><code class="xml string">"xsd:int"</code><code
+                                    class="xml plain">/&gt;</code></div>
+                            <div class="line number22 index21 alt1"><code class="xml spaces">
+                                    </code><code class="xml plain">&lt;/</code><code
+                                    class="xml keyword">xsd:complexType</code><code class="xml plain">&gt;</code></div>
+                            <div class="line number23 index22 alt2"> </div>
+                            <div class="line number24 index23 alt1"><code class="xml plain">&lt;/</code><code
+                                    class="xml keyword">xsd:schema</code><code class="xml plain">&gt;</code></div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <p>Here's a look at the domain java object.</p>
+
+    <div>
+        <div id="highlighter_65491" class="syntaxhighlighter  java">
+            <div class="toolbar"><span><a href="#" class="toolbar_item command_help help">?</a></span></div>
+            <table border="0" cellpadding="0" cellspacing="0">
+                <tbody>
+                <tr>
+                    <td class="gutter">
+                        <div class="line number1 index0 alt2">01</div>
+                        <div class="line number2 index1 alt1">02</div>
+                        <div class="line number3 index2 alt2">03</div>
+                        <div class="line number4 index3 alt1">04</div>
+                        <div class="line number5 index4 alt2">05</div>
+                        <div class="line number6 index5 alt1">06</div>
+                        <div class="line number7 index6 alt2">07</div>
+                        <div class="line number8 index7 alt1">08</div>
+                        <div class="line number9 index8 alt2">09</div>
+                        <div class="line number10 index9 alt1">10</div>
+                        <div class="line number11 index10 alt2">11</div>
+                        <div class="line number12 index11 alt1">12</div>
+                        <div class="line number13 index12 alt2">13</div>
+                        <div class="line number14 index13 alt1">14</div>
+                        <div class="line number15 index14 alt2">15</div>
+                        <div class="line number16 index15 alt1">16</div>
+                        <div class="line number17 index16 alt2">17</div>
+                        <div class="line number18 index17 alt1">18</div>
+                        <div class="line number19 index18 alt2">19</div>
+                        <div class="line number20 index19 alt1">20</div>
+                        <div class="line number21 index20 alt2">21</div>
+                        <div class="line number22 index21 alt1">22</div>
+                        <div class="line number23 index22 alt2">23</div>
+                        <div class="line number24 index23 alt1">24</div>
+                        <div class="line number25 index24 alt2">25</div>
+                        <div class="line number26 index25 alt1">26</div>
+                        <div class="line number27 index26 alt2">27</div>
+                        <div class="line number28 index27 alt1">28</div>
+                        <div class="line number29 index28 alt2">29</div>
+                    </td>
+                    <td class="code">
+                        <div class="container">
+                            <div class="line number1 index0 alt2"><code class="java keyword">package</code> <code
+                                    class="java plain">com.acme.model.project;</code></div>
+                            <div class="line number2 index1 alt1"> </div>
+                            <div class="line number3 index2 alt2"><code class="java comments">// imports removed for
+                                brevitiy</code></div>
+                            <div class="line number4 index3 alt1"> </div>
+                            <div class="line number5 index4 alt2"><code class="java color1">@XmlAccessorType</code><code
+                                    class="java plain">(XmlAccessType.NONE)</code></div>
+                            <div class="line number6 index5 alt1"><code class="java color1">@XmlType</code><code
+                                    class="java plain">(name = </code><code
+                                    class="java string">"ProjectType"</code><code class="java plain">, propOrder =
+                                {</code></div>
+                            <div class="line number7 index6 alt2"><code class="java spaces">        </code><code
+                                    class="java string">"name"</code><code class="java plain">,</code></div>
+                            <div class="line number8 index7 alt1"><code class="java spaces">        </code><code
+                                    class="java string">"number"</code><code class="java plain">,</code></div>
+                            <div class="line number9 index8 alt2"><code class="java spaces">        </code><code
+                                    class="java string">"status"</code></div>
+                            <div class="line number10 index9 alt1"><code class="java plain">})</code></div>
+                            <div class="line number11 index10 alt2"><code class="java color1">@XmlRootElement</code>
+                            </div>
+                            <div class="line number12 index11 alt1"><code class="java keyword">public</code> <code
+                                    class="java keyword">class</code> <code class="java plain">Project </code><code
+                                    class="java keyword">extends</code> <code class="java plain">BaseObject {</code>
+                            </div>
+                            <div class="line number13 index12 alt2"> </div>
+                            <div class="line number14 index13 alt1"><code class="java spaces">
+                                    </code><code class="java keyword">private</code> <code
+                                    class="java keyword">static</code> <code class="java keyword">final</code> <code
+                                    class="java keyword">long</code> <code class="java plain">serialVersionUID =
+                                7189638916879376326L;</code></div>
+                            <div class="line number15 index14 alt2"> </div>
+                            <div class="line number16 index15 alt1"><code class="java spaces">
+                                    </code><code class="java color1">@XmlAttribute</code></div>
+                            <div class="line number17 index16 alt2"><code class="java spaces">
+                                    </code><code class="java keyword">private</code> <code
+                                    class="java plain">Integer projectId;</code></div>
+                            <div class="line number18 index17 alt1"> </div>
+                            <div class="line number19 index18 alt2"><code class="java spaces">
+                                    </code><code class="java color1">@XmlElement</code><code
+                                    class="java plain">(required = </code><code class="java keyword">true</code><code
+                                    class="java plain">)</code></div>
+                            <div class="line number20 index19 alt1"><code class="java spaces">
+                                    </code><code class="java keyword">private</code> <code
+                                    class="java plain">String name;</code></div>
+                            <div class="line number21 index20 alt2"> </div>
+                            <div class="line number22 index21 alt1"><code class="java spaces">
+                                    </code><code class="java color1">@XmlElement</code><code
+                                    class="java plain">(required = </code><code class="java keyword">true</code><code
+                                    class="java plain">)</code></div>
+                            <div class="line number23 index22 alt2"><code class="java spaces">
+                                    </code><code class="java keyword">private</code> <code
+                                    class="java plain">String number;</code></div>
+                            <div class="line number24 index23 alt1"> </div>
+                            <div class="line number25 index24 alt2"><code class="java spaces">
+                                    </code><code class="java color1">@XmlElement</code><code
+                                    class="java plain">(required = </code><code class="java keyword">true</code><code
+                                    class="java plain">)</code></div>
+                            <div class="line number26 index25 alt1"><code class="java spaces">
+                                    </code><code class="java keyword">private</code> <code
+                                    class="java plain">String status;</code></div>
+                            <div class="line number27 index26 alt2"> </div>
+                            <div class="line number28 index27 alt1"><code class="java spaces">
+                                    </code><code class="java comments">// getters/setters removed
+                                for brevitiy</code></div>
+                            <div class="line number29 index28 alt2"><code class="java plain">}</code></div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <p>Here's a look at the unit test</p>
+
+    <div>
+        <div id="highlighter_879296" class="syntaxhighlighter  java">
+            <div class="toolbar"><span><a href="#" class="toolbar_item command_help help">?</a></span></div>
+            <table border="0" cellpadding="0" cellspacing="0">
+                <tbody>
+                <tr>
+                    <td class="gutter">
+                        <div class="line number1 index0 alt2">01</div>
+                        <div class="line number2 index1 alt1">02</div>
+                        <div class="line number3 index2 alt2">03</div>
+                        <div class="line number4 index3 alt1">04</div>
+                        <div class="line number5 index4 alt2">05</div>
+                        <div class="line number6 index5 alt1">06</div>
+                        <div class="line number7 index6 alt2">07</div>
+                        <div class="line number8 index7 alt1">08</div>
+                        <div class="line number9 index8 alt2">09</div>
+                        <div class="line number10 index9 alt1">10</div>
+                        <div class="line number11 index10 alt2">11</div>
+                        <div class="line number12 index11 alt1">12</div>
+                        <div class="line number13 index12 alt2">13</div>
+                        <div class="line number14 index13 alt1">14</div>
+                        <div class="line number15 index14 alt2">15</div>
+                        <div class="line number16 index15 alt1">16</div>
+                        <div class="line number17 index16 alt2">17</div>
+                        <div class="line number18 index17 alt1">18</div>
+                        <div class="line number19 index18 alt2">19</div>
+                        <div class="line number20 index19 alt1">20</div>
+                        <div class="line number21 index20 alt2">21</div>
+                        <div class="line number22 index21 alt1">22</div>
+                        <div class="line number23 index22 alt2">23</div>
+                        <div class="line number24 index23 alt1">24</div>
+                        <div class="line number25 index24 alt2">25</div>
+                        <div class="line number26 index25 alt1">26</div>
+                        <div class="line number27 index26 alt2">27</div>
+                        <div class="line number28 index27 alt1">28</div>
+                        <div class="line number29 index28 alt2">29</div>
+                        <div class="line number30 index29 alt1">30</div>
+                        <div class="line number31 index30 alt2">31</div>
+                        <div class="line number32 index31 alt1">32</div>
+                    </td>
+                    <td class="code">
+                        <div class="container">
+                            <div class="line number1 index0 alt2"><code class="java keyword">package</code> <code
+                                    class="java plain">com.acme.model.project;</code></div>
+                            <div class="line number2 index1 alt1"> </div>
+                            <div class="line number3 index2 alt2"><code class="java comments">// imports removed for
+                                brevitiy</code></div>
+                            <div class="line number4 index3 alt1"> </div>
+                            <div class="line number5 index4 alt2"><code class="java keyword">public</code> <code
+                                    class="java keyword">class</code> <code class="java plain">ProjectTest {</code>
+                            </div>
+                            <div class="line number6 index5 alt1"> </div>
+                            <div class="line number7 index6 alt2"><code class="java spaces">
+                                    </code><code class="java keyword">private</code> <code
+                                    class="java plain">JAXBContext jAXBContext;</code></div>
+                            <div class="line number8 index7 alt1"> </div>
+                            <div class="line number9 index8 alt2"><code class="java spaces">
+                                    </code><code class="java color1">@Before</code></div>
+                            <div class="line number10 index9 alt1"><code class="java spaces">
+                                    </code><code class="java keyword">public</code> <code
+                                    class="java keyword">void</code> <code class="java plain">setup() </code><code
+                                    class="java keyword">throws</code> <code class="java plain">Exception {</code></div>
+                            <div class="line number11 index10 alt2"><code class="java spaces">        </code><code
+                                    class="java plain">jAXBContext = JAXBContext.newInstance(Project.</code><code
+                                    class="java keyword">class</code><code class="java plain">);</code></div>
+                            <div class="line number12 index11 alt1"><code class="java spaces">
+                                    </code><code class="java plain">}</code></div>
+                            <div class="line number13 index12 alt2"> </div>
+                            <div class="line number14 index13 alt1"><code class="java spaces">
+                                    </code><code class="java preprocessor">/**</code></div>
+                            <div class="line number15 index14 alt2"><code class="java spaces">     </code><code
+                                    class="java preprocessor">* This test requires an accompying Project.xml located
+                                in</code></div>
+                            <div class="line number16 index15 alt1"><code class="java spaces">     </code><code
+                                    class="java preprocessor">* src/test/resources/com/acme/model/project</code></div>
+                            <div class="line number17 index16 alt2"><code class="java spaces">     </code><code
+                                    class="java preprocessor">*</code></div>
+                            <div class="line number18 index17 alt1"><code class="java spaces">     </code><code
+                                    class="java preprocessor">*/</code></div>
+                            <div class="line number19 index18 alt2"><code class="java spaces">
+                                    </code><code class="java color1">@Test</code></div>
+                            <div class="line number20 index19 alt1"><code class="java spaces">
+                                    </code><code class="java keyword">public</code> <code
+                                    class="java keyword">void</code> <code
+                                    class="java plain">testJAXBAnnotations() </code><code
+                                    class="java keyword">throws</code> <code class="java plain">Exception {</code></div>
+                            <div class="line number21 index20 alt2"><code class="java spaces">        </code><code
+                                    class="java plain">Resource schemaResource = </code><code
+                                    class="java keyword">new</code> <code
+                                    class="java plain">ClassPathResource(</code><code class="java string">"com/acme/schema/type/project/project.xsd"</code><code
+                                    class="java plain">);</code></div>
+                            <div class="line number22 index21 alt1"><code class="java spaces">        </code><code
+                                    class="java plain">File schema = schemaResource.getFile();</code></div>
+                            <div class="line number23 index22 alt2"> </div>
+                            <div class="line number24 index23 alt1"><code class="java spaces">        </code><code
+                                    class="java plain">Unmarshaller unmarshaller =
+                                jAXBContext.createUnmarshaller();</code></div>
+                            <div class="line number25 index24 alt2"><code class="java spaces">        </code><code
+                                    class="java plain">SchemaFactory sf =
+                                SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);</code></div>
+                            <div class="line number26 index25 alt1"><code class="java spaces">        </code><code
+                                    class="java plain">unmarshaller.setSchema(sf.newSchema(schema));</code></div>
+                            <div class="line number27 index26 alt2"> </div>
+                            <div class="line number28 index27 alt1"><code class="java spaces">        </code><code
+                                    class="java plain">Project project = (Project) unmarshaller.unmarshal(</code><code
+                                    class="java keyword">new</code> <code class="java plain">File(</code><code
+                                    class="java string">"src/test/resources/com/acme/model/project/Project.xml"</code><code
+                                    class="java plain">));</code></div>
+                            <div class="line number29 index28 alt2"> </div>
+                            <div class="line number30 index29 alt1"><code class="java spaces">        </code><code
+                                    class="java plain">Assert.assertNotNull(project);</code></div>
+                            <div class="line number31 index30 alt2"><code class="java spaces">
+                                    </code><code class="java plain">}</code></div>
+                            <div class="line number32 index31 alt1"><code class="java plain">}</code></div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <p>So, lets take a look at the unit test to see what's going on. In the unit test we're are loading the schema
+        definition using the resource abtraction provided by the <a href="http://www.springframework.org/">Spring
+            Framework</a> on lines 21 &amp; 22. We then create an <a
+                href="http://java.sun.com/javase/6/docs/api/javax/xml/bind/Unmarshaller.html">Unmarshaller</a> and give
+        it the schema on lines 24-26. Setting the schema effectively tells the Unmarshaller to validate the xml file;
+        specificying a null schema disables validation. The last step is the meat of the test, which is to unmarshall a
+        xml file. If we have any problems with our JAXB annotations they will surely show up here.</p>
+
+    <div>
+        <div id="highlighter_492764" class="syntaxhighlighter  xml">
+            <div class="toolbar"><span><a href="#" class="toolbar_item command_help help">?</a></span></div>
+            <table border="0" cellpadding="0" cellspacing="0">
+                <tbody>
+                <tr>
+                    <td class="gutter">
+                        <div class="line number1 index0 alt2">1</div>
+                        <div class="line number2 index1 alt1">2</div>
+                        <div class="line number3 index2 alt2">3</div>
+                        <div class="line number4 index3 alt1">4</div>
+                        <div class="line number5 index4 alt2">5</div>
+                        <div class="line number6 index5 alt1">6</div>
+                    </td>
+                    <td class="code">
+                        <div class="container">
+                            <div class="line number1 index0 alt2"><code class="xml plain">&lt;?</code><code
+                                    class="xml keyword">xml</code> <code class="xml color1">version</code><code
+                                    class="xml plain">=</code><code class="xml string">"1.0"</code> <code
+                                    class="xml color1">encoding</code><code class="xml plain">=</code><code
+                                    class="xml string">"UTF-8"</code> <code class="xml color1">standalone</code><code
+                                    class="xml plain">=</code><code class="xml string">"yes"</code><code
+                                    class="xml plain">?&gt;</code></div>
+                            <div class="line number2 index1 alt1"><code class="xml plain">&lt;</code><code
+                                    class="xml keyword">Project</code> <code class="xml color1">xmlns</code><code
+                                    class="xml plain">=</code><code class="xml string">"<a
+                                    href="http://acme.com/schema/type/project/v1">http://acme.com/schema/type/project/v1</a>"</code>
+                                <code class="xml color1">projectId</code><code class="xml plain">=</code><code
+                                        class="xml string">"1234"</code><code class="xml plain">&gt;</code></div>
+                            <div class="line number3 index2 alt2"><code class="xml spaces">
+                                    </code><code class="xml plain">&lt;</code><code
+                                    class="xml keyword">name</code><code class="xml plain">&gt;Sample
+                                Project&lt;/</code><code class="xml keyword">name</code><code class="xml plain">
+                                &gt;</code></div>
+                            <div class="line number4 index3 alt1"><code class="xml spaces">
+                                    </code><code class="xml plain">&lt;</code><code
+                                    class="xml keyword">number</code><code class="xml plain">&gt;091234&lt;/</code><code
+                                    class="xml keyword">number</code><code class="xml plain">&gt;</code></div>
+                            <div class="line number5 index4 alt2"><code class="xml spaces">
+                                    </code><code class="xml plain">&lt;</code><code
+                                    class="xml keyword">status</code><code class="xml plain">&gt;Closed&lt;/</code><code
+                                    class="xml keyword">status</code><code class="xml plain">&gt;</code></div>
+                            <div class="line number6 index5 alt1"><code class="xml plain">&lt;/</code><code
+                                    class="xml keyword">Project</code><code class="xml plain">&gt;</code></div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <p>Run the test.</p>
+
+    <p>…and this is what we get.</p>
+
+    <div>
+        <div id="highlighter_775058" class="syntaxhighlighter  java">
+            <div class="toolbar"><span><a href="#" class="toolbar_item command_help help">?</a></span></div>
+            <table border="0" cellpadding="0" cellspacing="0">
+                <tbody>
+                <tr>
+                    <td class="gutter">
+                        <div class="line number1 index0 alt2">01</div>
+                        <div class="line number2 index1 alt1">02</div>
+                        <div class="line number3 index2 alt2">03</div>
+                        <div class="line number4 index3 alt1">04</div>
+                        <div class="line number5 index4 alt2">05</div>
+                        <div class="line number6 index5 alt1">06</div>
+                        <div class="line number7 index6 alt2">07</div>
+                        <div class="line number8 index7 alt1">08</div>
+                        <div class="line number9 index8 alt2">09</div>
+                        <div class="line number10 index9 alt1">10</div>
+                        <div class="line number11 index10 alt2">11</div>
+                        <div class="line number12 index11 alt1">12</div>
+                        <div class="line number13 index12 alt2">13</div>
+                        <div class="line number14 index13 alt1">14</div>
+                    </td>
+                    <td class="code">
+                        <div class="container">
+                            <div class="line number1 index0 alt2"><code class="java plain">javax.xml.bind.UnmarshalException:
+                                unexpected element (uri:</code><code class="java string">"<a
+                                    href="http://acme.com/schema/type/project/v1">http://acme.com/schema/type/project/v1</a>"</code><code
+                                    class="java plain">, local:</code><code class="java string">"Project"</code><code
+                                    class="java plain">). Expected elements are &lt;{<a
+                                    href="http://acme.com/schema/type/project/v1">http://acme.com/schema/type/project/v1</a>}project&gt;
+                            </code></div>
+                            <div class="line number2 index1 alt1"><code class="java spaces">
+                                    </code><code class="java plain">at
+                                com.sun.xml.internal.bind.v2.runtime.unmarshaller.UnmarshallingContext.handleEvent(UnmarshallingContext.java:</code><code
+                                    class="java value">556</code><code class="java plain">)</code></div>
+                            <div class="line number3 index2 alt2"><code class="java spaces">
+                                    </code><code class="java plain">at
+                                com.sun.xml.internal.bind.v2.runtime.unmarshaller.Loader.reportError(Loader.java:</code><code
+                                    class="java value">199</code><code class="java plain">)</code></div>
+                            <div class="line number4 index3 alt1"><code class="java spaces">
+                                    </code><code class="java plain">at
+                                com.sun.xml.internal.bind.v2.runtime.unmarshaller.Loader.reportError(Loader.java:</code><code
+                                    class="java value">194</code><code class="java plain">)</code></div>
+                            <div class="line number5 index4 alt2"><code class="java spaces">
+                                    </code><code class="java plain">at
+                                com.sun.xml.internal.bind.v2.runtime.unmarshaller.Loader.reportUnexpectedChildElement(Loader.java:</code><code
+                                    class="java value">71</code><code class="java plain">)</code></div>
+                            <div class="line number6 index5 alt1"><code class="java spaces">
+                                    </code><code class="java plain">at
+                                com.sun.xml.internal.bind.v2.runtime.unmarshaller.UnmarshallingContext$DefaultRootLoader.childElement(UnmarshallingContext.java:</code><code
+                                    class="java value">962</code><code class="java plain">)</code></div>
+                            <div class="line number7 index6 alt2"><code class="java spaces">
+                                    </code><code class="java plain">at
+                                com.sun.xml.internal.bind.v2.runtime.unmarshaller.UnmarshallingContext._startElement(UnmarshallingContext.java:</code><code
+                                    class="java value">399</code><code class="java plain">)</code></div>
+                            <div class="line number8 index7 alt1"><code class="java spaces">
+                                    </code><code class="java plain">at
+                                com.sun.xml.internal.bind.v2.runtime.unmarshaller.UnmarshallingContext.startElement(UnmarshallingContext.java:</code><code
+                                    class="java value">380</code><code class="java plain">)</code></div>
+                            <div class="line number9 index8 alt2"><code class="java spaces">
+                                    </code><code class="java plain">at
+                                com.sun.xml.internal.bind.v2.runtime.unmarshaller.ValidatingUnmarshaller.startElement(ValidatingUnmarshaller.java:</code><code
+                                    class="java value">74</code><code class="java plain">)</code></div>
+                            <div class="line number10 index9 alt1"><code class="java plain">.</code></div>
+                            <div class="line number11 index10 alt2"><code class="java plain">.</code></div>
+                            <div class="line number12 index11 alt1"><code class="java plain">.</code></div>
+                            <div class="line number13 index12 alt2"><code class="java plain">.</code></div>
+                            <div class="line number14 index13 alt1"><code class="java plain">.</code></div>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <p>The error is barking at us saying the
+        <project> element is not understood by the JAXB framework. This is where i hit a wall for about two hours today,
+            scratching my head wondering what i had wrong. Both the xsd Project element definition and
+            <project> root element matched, yet still i have this problem. Everything matches up except for the <a
+                    href="http://java.sun.com/javase/6/docs/api/javax/xml/bind/annotation/XmlRootElement.html">@XmlRootElement</a>
+                on the Project class. By default, JAXB uses the camelcase version of the class name as the xml element
+                name.
+            </project>
+        </project>
+    </p>
+    <p>A simple configuration change from @XmlRootElement to @XmlRootElement (name = “Project”) fixed the problem and
+        now we see green bars!</p>
+
+</div>

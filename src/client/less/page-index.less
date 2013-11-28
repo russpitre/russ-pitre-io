@@ -1,0 +1,160 @@
+//
+// Home page
+// ------------------------------
+
+// Refactor below into mixins, etc.
+
+.layout {
+  min-height: 100%;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+
+  .left {
+    -webkit-box-ordinal-group: 1;
+    -moz-box-ordinal-group: 1;
+    -webkit-order: 0;
+    -ms-flex-order: 0;
+    order: 0;
+
+    -webkit-box-flex: 3;
+    -moz-box-flex: 3;
+    -webkit-flex: 3 1 auto;
+    -ms-flex: 3 1 auto;
+    flex: 3 1 auto;
+
+    -webkit-align-self: auto;
+    -ms-flex-item-align: auto;
+    align-self: auto;
+
+  }
+
+  .center {
+    -webkit-box-ordinal-group: 1;
+    -moz-box-ordinal-group: 1;
+    -webkit-order: 0;
+    -ms-flex-order: 0;
+    order: 0;
+
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -webkit-flex: 1 1 auto;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+
+    -webkit-align-self: auto;
+    -ms-flex-item-align: auto;
+    align-self: auto;
+  }
+
+  .body {
+    -webkit-box-ordinal-group: 1;
+    -moz-box-ordinal-group: 1;
+    -webkit-order: 0;
+    -ms-flex-order: 0;
+    order: 0;
+
+    -webkit-box-flex: 9;
+    -moz-box-flex: 9;
+    -webkit-flex: 9 1 auto;
+    -ms-flex: 9 1 auto;
+    flex: 9 1 auto;
+
+    -webkit-align-self: auto;
+    -ms-flex-item-align: auto;
+    align-self: auto;
+
+    background-color: @solarize-color-base1;
+
+    background-color: rgba(147, 161, 161,0.5);
+
+  }
+}
+
+aside {
+  width: 35%;
+  max-width: 500px;
+  padding: 25px;
+  color: white;
+  background-color: rgba(0,0,0,0.85);
+  min-height: 100%;
+  position: relative;
+
+  .site-name {
+    padding: 4px 10px;
+    background-color: @solarize-color-blue;
+    color: @solarize-color-base3;
+    letter-spacing: 6px;
+    display: inline-block;
+    .rounded-corners(15px);
+    font-family: @font-sans-serif;
+    float: right;
+    opacity: 1;
+  }
+
+  h1 {
+    font-size: 4em;
+    line-height: 1em;
+    color: @solarize-color-base3;
+    margin-top: 30px;
+    text-shadow: 1px 1px 1px @solarize-color-blue;
+  }
+
+  h3 {
+    font-size: 1.5em;
+    line-height: 1.2em;
+    color: @solarize-color-blue;
+    opacity: .9;
+    text-shadow: 1px 1px 1px black;
+    font-family: @font-sans-serif;
+    font-style: italic;
+    font-weight: normal;
+  }
+
+  p {
+    margin-top: 35px;
+    text-shadow: 1px 1px 1px black;
+    font-size: 1.2em;
+    display: block;
+    line-height: 1.8em;
+  }
+
+  div.social-links {
+    font-size: 1.5em;
+    position: relative;
+    bottom: 0;
+    right: 0;
+
+    a {
+      display: inline-block;
+      margin-left: 10px;
+      color: @solarize-color-base0;
+
+      &:hover {
+        color: @solarize-color-blue;
+      }
+    }
+  }
+}
+
+nav.center {
+  ul {
+    margin: 0;
+    padding: 0;
+    display: block;
+
+    li {
+      background-color: rgba(147, 161, 161, 1.0);
+      color: @solarize-color-red;
+      font-weight: bold;
+      display: block;
+      float: left;
+      border: 1px solid @los-beatles-blue;
+      width: 100px;
+      list-style: none;
+    }
+  }
+}

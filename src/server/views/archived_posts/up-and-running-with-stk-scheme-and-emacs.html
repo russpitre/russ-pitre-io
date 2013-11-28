@@ -1,0 +1,89 @@
+<div>
+    <p>Today I started to watch The Structure and Interpretation of Computer Programs (SICP) course at Academic Earth.
+        Academic Earth provides free access to video courses from top universities like UC Berkeley where this course is
+        taught. The course is based on the popular computer science book Structure and Interpretation of Computer
+        Programs. The professor of the course, Brian Harvey, claims it to be the best computer science book you'll ever
+        read, not the first time I've heard that. The book is available online for free, just Google <a
+                href="http://www.google.com/search?q=SICP">SCIP</a>.</p>
+
+    <p>The purpose of this blog post is to get you up and running quickly with the dialect of scheme the course uses
+        called STk and the emacs editor. My Linux chops are not strong at all so it took me a couple of days of spare
+        time to Google and setup my scheme environment.</p>
+
+    <p>I tried my best to capture and list the references I used below at the end of this post.</p>
+
+    <p>I'm running a fresh install of 32-bit Ubuntu Server 10.4.</p>
+
+    <h3>Installing STk</h3>
+
+    <p>These steps were taken directly from UCB Scheme page <a
+            href="http://inst.eecs.berkeley.edu/~scheme/precompiled/Linux/">here</a>.</p>
+
+    <p>First step is to install the Korn shell (ksh) which is required to install STk.</p>
+    <pre>sudo apt-get install ksh</pre>
+    <p>Download STk from UC Berkeley.</p>
+    <pre>wget http://inst.eecs.berkeley.edu/~scheme/precompiled/Linux/STk-4.0.1-ucb1.3.6.i386.rpm</pre>
+    <p>Install Alien.</p>
+    <pre>sudo apt-get install alien</pre>
+    <p>Remove the stk package name conflict between UCB stk and stk the sound processing library.</p>
+<pre>sudo aptitude remove stk
+sudo apt-get upgrade
+sudo apt-get dist-upgrade
+</pre>
+    <p>Run alien to convert the rpm into the debian package format.</p>
+    <pre>sudo alien -d STk-4.0.1-ucb1.3.6.i386.rpm</pre>
+    <p>Install STk using the newly created .deb file.</p>
+    <pre>sudo dpkg -i stk_4.0.1-1_i386.deb</pre>
+    <p>Now you should be able to run the STk interpreter.</p>
+    <pre>stk</pre>
+    <p><img src="http://blog.bigrocksoftware.com/wp-content/uploads/2010/10/stk_prompt.png" alt="" title="stk_prompt"
+            width="700" height="271" class="alignnone size-full wp-image-131"></p>
+
+    <h3>Short Introduction to Emacs</h3>
+
+    <p>The primary motivation for this blog post is this section about Emacs. While watching the first video in the SICP
+        course I noticed the instructor using a split screen text editor and was curious to learn more about it. I will
+        gently introduce basic emacs commands and finish up with showing you how to setup emacs with a split screen. In
+        the top pane we'll write simple function and in the bottom pane we'll run the function in “shell” buffer.</p>
+
+    <p>Emacs definitely takes some getting use to if you're not a keyboard jockey, hopefully you can hang in there.</p>
+
+    <p>If you don't have emacs installed, you can install it by running the following command:</p>
+    <pre>sudo apt-get install emacs23</pre>
+    <p>Launch emacs by typing the command:</p>
+    <pre>emacs square.scm</pre>
+    <p>Once emacs is up and running type the following scheme function in the editor.</p>
+    <pre>(define (square x) (* x x))</pre>
+    <p>Save the buffer using the following command.</p>
+    <pre>Ctrl-x, Ctrl-s</pre>
+    <p>You have seem a message that says “Wrote /path/to/square.scm”. Now we want to split the editor into two
+        horizontal windows. One pane will display the scheme function and the other will display a command prompt where
+        we can launch the STk interpreter. In order to accomplish this, we start a new “shell” buffer.</p>
+    <pre>Alt-x, and type "shell" (without the parenthesis)</pre>
+    <p>Next up is to split the window horizontally. This split the window horizontally with the same document in both
+        panes.</p>
+    <pre>Ctrl-x, 2</pre>
+    <p>Now you'll want to switch focus between the two panes. </p>
+    <pre>Ctrl-x, o  (thats an 'o', not a zero)</pre>
+    <p>Switch focus to the pane you want to view the scheme function in and then type:</p>
+    <pre>Ctrl-x, b</pre>
+    <p>Switch focus to the pane containing the STk interpreter using the Ctrl-x, o command and then load the scheme
+        function.</p>
+    <pre>STk&gt;(load "scheme.scm")</pre>
+    <p>Now that the function is loaded into the interpreter you should be able use the square function.</p>
+<pre>STk&gt; (square 5)
+25
+STk&gt;
+</pre>
+    <p>And there you have it, a split horizontal pane in emacs where you can view both the STk interpreter and the
+        source code of the function.</p>
+
+    <p><img src="http://blog.bigrocksoftware.com/wp-content/uploads/2010/10/emacs_split_horizontally.png" alt=""
+            title="Emacs with a horizontal split windows" width="700" height="438"
+            class="alignnone size-full wp-image-136"></p>
+
+    <h3>References</h3>
+    <p>(Installation)</p>
+    <p>http://inst.eecs.berkeley.edu/~scheme/precompiled/Linux/</p>
+    <p>http://ubuntuforums.org/showthread.php?t=682432</p>
+</div>

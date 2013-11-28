@@ -1,0 +1,177 @@
+extends ../layouts/default
+
+block content
+
+    h3 Session Management
+
+    div
+        | Creates a new named tmux sesion.
+
+    pre.prettyprint.linenums.lang-sh
+        | $ tmux new -s session_name
+
+    div
+        | Reattached to a named tmux session
+
+    pre.prettyprint.linenums.lang-sh
+        | $ tmux attach -t session_main
+
+    div
+        | Alternatively, if there's only a single tmux session you can attach without using the session name switch.
+
+    pre.prettyprint.linenums.lang-sh
+        | $ tmux attach
+
+    div
+        | You can detach from within a tmux session with:
+
+    pre.prettyprint.linenums.lang-sh
+        | PREFIX d
+
+    div
+        | To list all of the active tmux sessions:
+
+    pre.prettyprint.linenums.lang-sh
+        | $ tmux ls
+
+    div
+        | For when you need to kill a session:
+
+    pre.prettyprint.linenums.lang-sh
+        | $ tmux kill-session -t session_name
+
+    h3 Command Mode
+
+    table.table.table-bordered.table-striped.table-bordered
+        tbody
+            tr
+                td PREFIX :
+                td Enters command mode.
+
+    h3 Window Management
+
+    table.table.table-bordered.table-striped.table-bordered
+        tbody
+            tr
+                td PREFIX c
+                td Creates a new window.
+            tr
+                td PREFIX n
+                td Move to the next window.
+            tr
+                td PREFIX p
+                td Move to the previous window.
+            tr
+                td PREFIX {win-number}
+                td Move to the window by window number.
+            tr
+                td PREFIX w
+                td Navigate to a window via a visual display listing all of the windows.
+            tr
+                td PREFIX &
+                td Kill the current window.
+            tr
+                td PREFIX ,
+                td Displays a prompt to rename the window.
+
+    h3 Pane Management
+
+    table.table.table-bordered.table-striped.table-bordered
+        tbody
+            tr
+                td PREFIX %
+                td Splits the window pane vertically.
+            tr
+                td PREFIX "
+                td Splits the window pane horizontally.
+            tr
+                td PREFIX o
+                td Used repeatedly, will cycle trough all of the panes.
+            tr
+                td PREFIX &larr; &uarr; &darr; &rarr;
+                td Move to another window using arrow keys.
+            tr
+                td PREFIX SPACEBAR
+                td Cycle through the tmus default pane layouts.
+            tr
+                td PREFIX x
+                td Kills a pane.
+
+    h3 .tmux.conf
+
+    div
+        | By default tmux loads configuration settings from the file .tmux.conf located in the root of your home
+        | directory. Below is my tmux config, it's mostly based off the tmux book from Pragmattic which I
+        | highly recommend.
+        
+        pre.prettyprint.linenums.lang-sh
+            
+            | # Redefine the command prefix to Ctrl-a
+            | set -g prefix C-a
+            | 
+            | # Unbind the default command prefix to free it up for other uses.
+            | unbind C-b
+            | 
+            | # Change the default delay to be more responsive
+            | set -s escape-time 1
+            | 
+            | # Update the default window index from 0 to 1
+            | set -g base-index 1
+            | 
+            | # Update the default pane index from 0 to 1 using the set-window-option
+            | setw -g pane-base-index 1
+            | 
+            | ####################################################################
+            | # Key bindings
+            | ####################################################################
+            | 
+            | # Reloading tmux configuration file
+            | bind r source-file ~/.tmux.conf \; display "Reloaded!"
+            | 
+            | # Allow us to send Ctrl-a prefix to other applications such as
+            | # Vim by pressing Ctrl-A twice
+            | bind C-a send-prefix
+            | 
+            | # Easier bindings for splitting panes
+            | bind | split-window -h
+            | bind - split-window -v
+            | 
+            | # Easier bindings for moving between panes, same keys as Vim
+            | bind h select-pane -L
+            | bind j select-pane -D
+            | bind k select-pane -U
+            | bind l select-pane -R
+            | 
+            | bind -r C-h select-window -t :-
+            | bind -r C-l select-window -t :+
+            | 
+            | # Easier bindings to resize panes, -r switch means we can repeatedly press
+            | # Shift-X to resize without needing to press the PREFIX key.
+            | bind -r H resize-pane -L 5
+            | bind -r J resize-pane -D 5
+            | bind -r K resize-pane -U 5
+            | bind -r L resize-pane -R 5
+            | 
+            | ####################################################################
+            | # Visual styles
+            | ####################################################################
+            | 
+            | set -g default-terminal "screen-256color"
+            | set -g status-fg white
+            | set -g status-bg black
+            | 
+            | # Window list colors
+            | setw -g window-status-fg cyan
+            | setw -g window-status-bg default
+            | setw -g window-status-attr dim
+            | 
+            | setw -g window-status-current-fg white
+            | setw -g window-status-current-bg red
+            | setw -g window-status-current-attr bright
+            | 
+            | # Window pane colors
+            | set -g pane-border-fg green
+            | set -g pane-border-bg black
+            | set -g pane-active-border-fg white
+            | set -g pane-active-border-bg yellow
+            
